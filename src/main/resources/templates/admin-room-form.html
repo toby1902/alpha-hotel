@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chambre Admin - Alpha Hotel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="admin-page">
+<nav class="navbar navbar-expand-lg navbar-dark admin-navbar sticky-top">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3">
+            <img th:src="@{/images/logo.png}" alt="Logo Alpha Hotel" class="brand-mark">
+            <span class="navbar-brand fw-bold mb-0">Alpha Hotel</span>
+        </div>
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <span class="text-white small d-none d-md-inline" sec:authentication="name"></span>
+            <form th:action="@{/auth/logout}" method="post">
+                <button class="btn btn-outline-light btn-sm" type="submit">Deconnexion</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-4">
+    <div class="admin-action-bar mb-4">
+        <a class="btn btn-dark" th:href="@{/admin/dashboard}">Dashboard</a>
+        <a class="btn btn-outline-primary" th:href="@{/admin/reservations/nouvelle}">Reservation admin</a>
+        <a class="btn btn-outline-primary" th:href="@{/admin/paiements/nouveau}">Paiement</a>
+        <a class="btn btn-outline-primary active" th:href="@{/admin/chambres/nouvelle}">Chambre</a>
+        <a class="btn btn-outline-primary" th:href="@{/admin/stocks/nouveau}">Stock</a>
+        <a class="btn btn-outline-primary" th:href="@{/admin/chambres/disponibles}">Disponibilites</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 surface-glass">
+                <div class="card-body p-4 p-lg-5">
+                    <span class="badge text-bg-dark mb-3">Chambre</span>
+                    <h1 class="h3 fw-bold mb-3">Ajouter une chambre</h1>
+                    <form th:action="@{/admin/chambres}" th:object="${chambreForm}" method="post" class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Numero</label>
+                            <input class="form-control" th:field="*{numero}" maxlength="20" pattern="[A-Za-z0-9-]{1,20}" title="Le numero ne doit contenir que lettres, chiffres ou tirets.">
+                            <div class="text-danger small mt-1" th:errors="*{numero}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Type</label>
+                            <select class="form-select" th:field="*{type}">
+                                <option value="">Choisir</option>
+                                <option th:each="type : ${typesChambre}" th:value="${type.name()}" th:text="${type.name()}"></option>
+                            </select>
+                            <div class="text-danger small mt-1" th:errors="*{type}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Prix / nuit</label>
+                            <input type="number" step="0.01" min="0.01" class="form-control" th:field="*{prixParNuit}">
+                            <div class="text-danger small mt-1" th:errors="*{prixParNuit}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Capacite</label>
+                            <input type="number" min="1" class="form-control" th:field="*{capacite}">
+                            <div class="text-danger small mt-1" th:errors="*{capacite}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Disponibilite</label>
+                            <select class="form-select" th:field="*{disponible}">
+                                <option th:value="true">Disponible</option>
+                                <option th:value="false">Indisponible</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" rows="3" th:field="*{description}" minlength="5" maxlength="255"></textarea>
+                            <div class="text-danger small mt-1" th:errors="*{description}"></div>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-dark" type="submit">Ajouter la chambre</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 surface-glass">
+                <div class="card-body p-4">
+                    <h2 class="h5 fw-bold mb-3">Conseil</h2>
+                    <p class="text-muted mb-0">Apres creation, vous pourrez toujours basculer la disponibilite depuis le dashboard pour garder un suivi rapide de l'inventaire des chambres.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpha Hotel - Accueil</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="home-page">
+<nav class="navbar navbar-expand-lg navbar-dark client-navbar sticky-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-3" th:href="@{/}">
+            <img th:src="@{/images/logo.png}" alt="Logo Alpha Hotel" class="brand-mark">
+            <span class="fw-bold">Alpha Hotel</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#clientNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="clientNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                <li class="nav-item"><a class="nav-link" href="#hero">Accueil</a></li>
+                <li class="nav-item"><a class="nav-link" href="#chambres">Chambres</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/reservations/disponibilites}">Disponibilites</a></li>
+                <li class="nav-item"><a class="nav-link" href="#galerie">Galerie</a></li>
+                <li class="nav-item"><a class="nav-link" href="#about">A propos</a></li>
+                <li class="nav-item"><a class="btn btn-warning ms-lg-3" th:href="@{/reservations/nouvelle}">Reserver</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<section class="home-hero" id="hero">
+    <div class="container py-5">
+        <div class="row align-items-center g-5 min-vh-75">
+            <div class="col-lg-6">
+                <span class="hero-kicker">Hospitalite malgache, confort moderne</span>
+                <h1 class="display-4 fw-bold text-white mt-3">Bienvenue a Alpha Hotel</h1>
+                <p class="lead text-white-50 mt-3">
+                    Decouvrez un espace de sejour chaleureux, des chambres soigneusement preparees
+                    et un service de reservation simple pour vos clients.
+                </p>
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <a class="btn btn-warning btn-lg" th:href="@{/reservations/nouvelle}">Faire une reservation</a>
+                    <a class="btn btn-outline-warning btn-lg" th:href="@{/reservations/disponibilites}">Rechercher une chambre</a>
+                    <a class="btn btn-outline-light btn-lg" href="#chambres">Voir les chambres</a>
+                </div>
+                <div class="home-stats row g-3 mt-4">
+                    <div class="col-sm-4">
+                        <div class="surface-glass rounded-4 p-3 text-center">
+                            <div class="stat-number">24/7</div>
+                            <div class="small text-muted">Accueil client</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="surface-glass rounded-4 p-3 text-center">
+                            <div class="stat-number">3</div>
+                            <div class="small text-muted">Types de chambres</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="surface-glass rounded-4 p-3 text-center">
+                            <div class="stat-number">30%</div>
+                            <div class="small text-muted">Acompte securise</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-photo-frame">
+                    <img th:src="@{/images/acceuil.jpeg}" alt="Accueil Alpha Hotel" class="hero-photo">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5" id="chambres">
+    <div class="container">
+        <div class="section-heading text-center mb-5">
+            <span class="section-tag">Nos chambres</span>
+            <h2 class="fw-bold mt-2">Choisissez le sejour qui vous ressemble</h2>
+            <p class="text-muted">Des offres claires, des tarifs en ariary et une experience de reservation rapide.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4" th:each="chambre, stat : ${chambres}">
+                <div class="card h-100 border-0 shadow-lg rounded-4 room-card">
+                    <img th:src="${stat.index == 0} ? @{/images/chambre.jpg} : (${stat.index == 1} ? @{/images/photo.avif} : @{/images/photo7.avif})"
+                         alt="Photo de chambre" class="room-card-image">
+                    <div class="card-body p-4">
+                        <span class="badge text-bg-warning mb-3" th:text="${chambre.type}"></span>
+                        <h3 class="h4 fw-bold">Chambre <span th:text="${chambre.numero}"></span></h3>
+                        <p class="text-muted" th:text="${chambre.description}"></p>
+                        <p class="mb-2"><strong>Capacite :</strong> <span th:text="${chambre.capacite}"></span> personne(s)</p>
+                        <p class="mb-4"><strong>Tarif :</strong> <span th:text="${chambre.prixParNuit}"></span> Ar / nuit</p>
+                        <a class="btn btn-dark w-100" th:href="@{/reservations/nouvelle}">Reserver cette chambre</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 gallery-section" id="galerie">
+    <div class="container">
+        <div class="section-heading text-center mb-5">
+            <span class="section-tag">Galerie</span>
+            <h2 class="fw-bold mt-2">Ambiance et espaces de l'hotel</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <img th:src="@{/images/photo.avif}" alt="Chambre premium" class="gallery-photo tall-photo">
+            </div>
+            <div class="col-lg-7">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <img th:src="@{/images/chambre.jpg}" alt="Chambre standard" class="gallery-photo">
+                    </div>
+                    <div class="col-md-6">
+                        <img th:src="@{/images/photo7.avif}" alt="Espace hotel" class="gallery-photo">
+                    </div>
+                    <div class="col-12">
+                        <div class="surface-glass rounded-4 p-4 h-100">
+                            <h3 class="h4 fw-bold">Un cadre propice au repos</h3>
+                            <p class="text-muted mb-0">
+                                Alpha Hotel mise sur une atmosphere accueillante, une presentation soignee
+                                des chambres et un parcours client fluide depuis l'accueil jusqu'a la reservation.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5" id="about">
+    <div class="container">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-6">
+                <div class="surface-glass rounded-4 p-4 p-lg-5 shadow-lg">
+                    <span class="section-tag">A propos de l'hotel</span>
+                    <h2 class="fw-bold mt-3">Une experience simple, humaine et fiable</h2>
+                    <p class="text-muted mt-3">
+                        Alpha Hotel est pense pour offrir un accueil professionnel, une gestion efficace
+                        des reservations et une meilleure communication entre clients et reception.
+                    </p>
+                    <ul class="list-unstyled about-list">
+                        <li>Reservation rapide avec avance de 30 %</li>
+                        <li>Validation centralisee par l'administration</li>
+                        <li>Confirmation email au client et notification admin</li>
+                        <li>Suivi du sejour, facturation et PDF</li>
+                    </ul>
+                    <div class="mt-4">
+                        <p class="mb-2"><strong>Adresse :</strong> Atsimondrova Ambatondrazaka 503</p>
+                        <p class="mb-0"><strong>Contact :</strong> 0349733147 ou 0381219163</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="about-visual">
+                    <img th:src="@{/images/Madagascar.png}" alt="Madagascar" class="about-map">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 cta-section">
+    <div class="container">
+        <div class="surface-glass rounded-4 p-4 p-lg-5 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-4">
+            <div>
+                <span class="section-tag">Reservation</span>
+                <h2 class="fw-bold mt-2 mb-2">Pret a planifier votre prochain sejour ?</h2>
+                <p class="text-muted mb-0">Accedez au formulaire et confirmez votre demande en quelques instants.</p>
+            </div>
+            <a class="btn btn-dark btn-lg" th:href="@{/reservations/nouvelle}">Ouvrir le formulaire</a>
+        </div>
+    </div>
+</section>
+
+<footer class="site-footer py-4">
+    <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <img th:src="@{/images/logo.png}" alt="Logo Alpha Hotel" class="brand-mark">
+            <div>
+                <div class="fw-bold text-white">Alpha Hotel</div>
+                <div class="small text-white-50">Atsimondrova Ambatondrazaka 503</div>
+            </div>
+        </div>
+        <div class="text-white-50 small">
+            Contact : 0349733147 ou 0381219163
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

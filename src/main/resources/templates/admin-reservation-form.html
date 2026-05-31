@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservation Admin - Alpha Hotel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="admin-page">
+<nav class="navbar navbar-expand-lg navbar-dark admin-navbar sticky-top">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3">
+            <img th:src="@{/images/logo.png}" alt="Logo Alpha Hotel" class="brand-mark">
+            <span class="navbar-brand fw-bold mb-0">Alpha Hotel</span>
+        </div>
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <span class="text-white small d-none d-md-inline" sec:authentication="name"></span>
+            <form th:action="@{/auth/logout}" method="post">
+                <button class="btn btn-outline-light btn-sm" type="submit">Deconnexion</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-4">
+    <div class="admin-action-bar mb-4">
+        <a class="btn btn-dark" th:href="@{/admin/dashboard}">Dashboard</a>
+        <a class="btn btn-outline-primary active" th:href="@{/admin/reservations/nouvelle}">Reservation admin</a>
+        <a class="btn btn-outline-primary" th:href="@{/admin/paiements/nouveau}">Paiement</a>
+        <a class="btn btn-outline-primary" th:href="@{/admin/chambres/nouvelle}">Chambre</a>
+        <a class="btn btn-outline-primary" th:href="@{/admin/stocks/nouveau}">Stock</a>
+        <a class="btn btn-outline-primary" th:href="@{/admin/chambres/disponibles}">Disponibilites</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-xl-8">
+            <div class="card border-0 shadow-sm rounded-4 surface-glass">
+                <div class="card-body p-4 p-lg-5">
+                    <span class="badge text-bg-primary mb-3">Reservation sur place</span>
+                    <h1 class="h3 fw-bold mb-3">Saisir une reservation depuis l'administration</h1>
+                    <p class="text-muted mb-4">Utilisez ce formulaire pour enregistrer une demande client directement a la reception.</p>
+
+                    <div class="alert alert-danger" th:if="${erreurReservation}" th:text="${erreurReservation}"></div>
+
+                    <form th:action="@{/admin/reservations/nouvelle}" th:object="${reservationForm}" method="post">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nom complet</label>
+                                <input class="form-control" th:field="*{nomComplet}" maxlength="120" pattern="[A-Za-zÀ-ÖØ-öø-ÿ]+([ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*" title="Utilisez uniquement des lettres, espaces, apostrophes ou tirets.">
+                                <div class="text-danger small mt-1" th:errors="*{nomComplet}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Telephone</label>
+                                <input class="form-control" th:field="*{telephone}" maxlength="13" inputmode="tel" pattern="(0|\+261)(32|33|34|38)[0-9]{7}" title="Format malgache attendu : 032/033/034/038 suivi de 7 chiffres, ou +261.">
+                                <div class="text-danger small mt-1" th:errors="*{telephone}"></div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" th:field="*{email}" maxlength="120" inputmode="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}" oninput="this.value = this.value.toLowerCase()">
+                                <div class="text-danger small mt-1" th:errors="*{email}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Date d'arrivee</label>
+                                <input type="date" class="form-control" th:field="*{dateArrivee}">
+                                <div class="text-danger small mt-1" th:errors="*{dateArrivee}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Date de depart</label>
+                                <input type="date" class="form-control" th:field="*{dateDepart}">
+                                <div class="text-danger small mt-1" th:errors="*{dateDepart}"></div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Chambre disponible</label>
+                                <select class="form-select" th:field="*{chambreId}" id="adminChambreId">
+                                    <option value="">Choisir une chambre</option>
+                                    <option th:each="chambre : ${chambres}"
+                                            th:value="${chambre.id}"
+                                            th:attr="data-prix=${chambre.prixParNuit}"
+                                            th:text="${'Chambre ' + chambre.numero + ' - ' + chambre.type + ' - ' + chambre.prixParNuit + ' Ar/nuit'}">
+                                    </option>
+                                </select>
+                                <div class="text-danger small mt-1" th:errors="*{chambreId}"></div>
+                            </div>
+                            <div class="col-12">
+                                <hr class="my-2">
+                                <h2 class="h6 fw-bold mb-2">Details de l'avance obligatoire</h2>
+                                <p class="small text-muted mb-0">Le client doit verser 30 % du montant total estime pour confirmer la demande.</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Libelle de l'avance</label>
+                                <input class="form-control" th:field="*{libelleAvance}" placeholder="Exemple : Acompte reservation chambre 201" maxlength="120" pattern="[A-Za-zÀ-ÖØ-öø-ÿ0-9'()\- ,.]{3,120}" title="Utilisez seulement lettres, chiffres, espaces et ponctuation simple.">
+                                <div class="text-danger small mt-1" th:errors="*{libelleAvance}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Mode de paiement</label>
+                                <select class="form-select" th:field="*{modePaiementAvance}" id="adminModePaiementAvance">
+                                    <option value="">Choisir un mode</option>
+                                    <option th:each="mode : ${modesPaiement}" th:value="${mode.name()}" th:text="${#strings.replace(mode.name(), '_', ' ')}"></option>
+                                </select>
+                                <div class="text-danger small mt-1" th:errors="*{modePaiementAvance}"></div>
+                            </div>
+                            <div class="col-12 d-none" id="adminMobileMoneyWrapper">
+                                <label class="form-label">Numero Mobile Money utilise pour l'avance</label>
+                                <input class="form-control" th:field="*{telephonePaiementMobile}" maxlength="13" inputmode="tel" pattern="(0|\+261)(32|33|34|38)[0-9]{7}" title="Saisissez un numero Mobile Money au format malgache.">
+                                <div class="text-danger small mt-1" th:errors="*{telephonePaiementMobile}"></div>
+                            </div>
+                            <div class="text-danger small mt-1" th:errors="*{telephoneMobileMoneyValide}"></div>
+                            <div class="col-md-6">
+                                <label class="form-label">Montant estime du sejour</label>
+                                <input type="text" id="adminMontantTotalEstime" class="form-control" value="0 Ar" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Avance obligatoire (30 %)</label>
+                                <input type="text" id="adminMontantAvanceEstime" class="form-control" value="0 Ar" readonly>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-column flex-md-row gap-3 mt-4">
+                            <button type="submit" class="btn btn-primary">Enregistrer la reservation</button>
+                            <a class="btn btn-outline-secondary" th:href="@{/admin/chambres/disponibles}">Verifier les disponibilites</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4">
+            <div class="card border-0 shadow-sm rounded-4 surface-glass">
+                <div class="card-body p-4">
+                    <h2 class="h5 fw-bold mb-3">Conseils reception</h2>
+                    <ul class="list-unstyled mb-0 text-muted">
+                        <li class="mb-2">Verifiez d'abord les disponibilites si les dates viennent d'etre choisies.</li>
+                        <li class="mb-2">Le dossier sera cree en attente puis pourra etre valide depuis le dashboard.</li>
+                        <li class="mb-0">En mode Mobile Money, le numero du portefeuille du client devient obligatoire.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    const adminChambreSelect = document.getElementById('adminChambreId');
+    const adminArriveeInput = document.getElementById('dateArrivee');
+    const adminDepartInput = document.getElementById('dateDepart');
+    const adminTotalInput = document.getElementById('adminMontantTotalEstime');
+    const adminAvanceInput = document.getElementById('adminMontantAvanceEstime');
+    const adminModePaiementSelect = document.getElementById('adminModePaiementAvance');
+    const adminMobileMoneyWrapper = document.getElementById('adminMobileMoneyWrapper');
+    const adminTelephoneMobileInput = document.getElementById('telephonePaiementMobile');
+    const adminNomCompletInput = document.getElementById('nomComplet');
+    const adminTelephoneInput = document.getElementById('telephone');
+
+    function nettoyerNomAdmin(inputElement) {
+        if (!inputElement) {
+            return;
+        }
+        inputElement.value = inputElement.value
+            .replace(/[^A-Za-zÀ-ÖØ-öø-ÿ' -]/g, '')
+            .replace(/\s{2,}/g, ' ')
+            .replace(/-{2,}/g, '-')
+            .replace(/'{2,}/g, "'");
+    }
+
+    function nettoyerTelephoneMalgacheAdmin(inputElement) {
+        if (!inputElement) {
+            return;
+        }
+        const commenceParPlus = inputElement.value.startsWith('+');
+        let valeur = inputElement.value.replace(/[^\d+]/g, '');
+        if (commenceParPlus) {
+            valeur = '+' + valeur.replace(/\+/g, '').replace(/^\+/, '');
+        } else {
+            valeur = valeur.replace(/\+/g, '');
+        }
+        inputElement.value = valeur;
+    }
+
+    function calculerEstimationAdmin() {
+        const option = adminChambreSelect.options[adminChambreSelect.selectedIndex];
+        const prix = option ? Number(option.getAttribute('data-prix') || 0) : 0;
+        const arrivee = adminArriveeInput.value ? new Date(adminArriveeInput.value) : null;
+        const depart = adminDepartInput.value ? new Date(adminDepartInput.value) : null;
+        let nuits = 0;
+        if (arrivee && depart && depart > arrivee) {
+            nuits = Math.ceil((depart.getTime() - arrivee.getTime()) / (1000 * 60 * 60 * 24));
+        }
+        const total = prix * nuits;
+        const avance = Math.round(total * 0.30);
+        adminTotalInput.value = total.toLocaleString('fr-FR') + ' Ar';
+        adminAvanceInput.value = avance.toLocaleString('fr-FR') + ' Ar';
+    }
+
+    function gererChampMobileMoneyAdmin() {
+        const mobileMoney = adminModePaiementSelect.value === 'MOBILE_MONEY';
+        adminMobileMoneyWrapper.classList.toggle('d-none', !mobileMoney);
+        adminTelephoneMobileInput.required = mobileMoney;
+        if (!mobileMoney) {
+            adminTelephoneMobileInput.value = '';
+        }
+    }
+
+    adminChambreSelect.addEventListener('change', calculerEstimationAdmin);
+    adminArriveeInput.addEventListener('change', calculerEstimationAdmin);
+    adminDepartInput.addEventListener('change', calculerEstimationAdmin);
+    adminNomCompletInput.addEventListener('input', function () {
+        nettoyerNomAdmin(adminNomCompletInput);
+    });
+    adminTelephoneInput.addEventListener('input', function () {
+        nettoyerTelephoneMalgacheAdmin(adminTelephoneInput);
+    });
+    adminTelephoneMobileInput.addEventListener('input', function () {
+        nettoyerTelephoneMalgacheAdmin(adminTelephoneMobileInput);
+    });
+    adminModePaiementSelect.addEventListener('change', gererChampMobileMoneyAdmin);
+    calculerEstimationAdmin();
+    nettoyerNomAdmin(adminNomCompletInput);
+    nettoyerTelephoneMalgacheAdmin(adminTelephoneInput);
+    gererChampMobileMoneyAdmin();
+</script>
+</body>
+</html>

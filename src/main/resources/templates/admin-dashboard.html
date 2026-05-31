@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Alpha Hotel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="admin-page">
+<nav class="navbar navbar-expand-lg navbar-dark admin-navbar sticky-top">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3">
+            <img th:src="@{/images/logo.png}" alt="Logo Alpha Hotel" class="brand-mark">
+            <span class="navbar-brand fw-bold mb-0">Alpha Hotel</span>
+        </div>
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <span class="text-white small d-none d-md-inline" sec:authentication="name"></span>
+            <form th:action="@{/auth/logout}" method="post">
+                <button class="btn btn-outline-light btn-sm" type="submit">Deconnexion</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <h1 class="h2 fw-bold mb-1">Dashboard reception</h1>
+            <p class="text-muted mb-0">Pilotage des reservations, chambres, paiements et stocks PPN.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-outline-primary" th:href="@{/admin/chambres/disponibles}">Recherche disponibilites</a>
+            <a class="btn btn-dark" th:href="@{/admin/reservations/export/csv(recherche=${recherche},statut=${statutSelectionne},statutSejour=${statutSejourSelectionne})}">
+                Export CSV
+            </a>
+        </div>
+    </div>
+
+    <div class="alert alert-success" th:if="${param.reservationValidee}">La reservation a ete confirmee et l'email de confirmation a ete envoye.</div>
+    <div class="alert alert-success" th:if="${param.reservationModifiee}">La reservation a ete modifiee avec succes.</div>
+    <div class="alert alert-success" th:if="${param.annulationOk}">La reservation a ete annulee.</div>
+    <div class="alert alert-success" th:if="${param.stockSaved}">Le produit PPN a ete enregistre avec succes.</div>
+    <div class="alert alert-success" th:if="${param.checkinOk}">Le check-in a ete effectue avec succes.</div>
+    <div class="alert alert-success" th:if="${param.checkoutOk}">Le check-out a ete effectue avec succes.</div>
+    <div class="alert alert-success" th:if="${param.paiementOk}">Le paiement a ete enregistre et la facture a ete mise a jour.</div>
+    <div class="alert alert-success" th:if="${param.chambreAjoutee}">La chambre a ete ajoutee avec succes.</div>
+    <div class="alert alert-success" th:if="${param.chambreModifiee}">La disponibilite de la chambre a ete mise a jour.</div>
+    <div class="alert alert-success" th:if="${param.reservationCreee}">La reservation saisie par l'administration a ete enregistree avec succes.</div>
+    <div class="alert alert-danger" th:if="${erreurEmailConfirmation}" th:text="${erreurEmailConfirmation}"></div>
+    <div class="alert alert-danger" th:if="${erreurFacturePdf}" th:text="${erreurFacturePdf}"></div>
+
+    <section class="surface-glass rounded-4 p-3 p-lg-4 mb-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+            <div>
+                <h2 class="h5 fw-bold mb-1">Actions rapides</h2>
+                <p class="text-muted mb-0">Chaque formulaire d'administration est maintenant disponible sur une page dediee.</p>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-sm-6 col-xl-3">
+                <a class="admin-shortcut-card text-decoration-none" th:href="@{/admin/reservations/nouvelle}">
+                    <span class="admin-shortcut-badge text-bg-primary">Reservation</span>
+                    <strong class="d-block mt-3 text-dark">Nouvelle reservation admin</strong>
+                    <span class="small text-muted">Saisir une reservation pour un client sur place.</span>
+                </a>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <a class="admin-shortcut-card text-decoration-none" th:href="@{/admin/paiements/nouveau}">
+                    <span class="admin-shortcut-badge text-bg-success">Paiement</span>
+                    <strong class="d-block mt-3 text-dark">Enregistrer un paiement</strong>
+                    <span class="small text-muted">Encaisser rapidement avec solde pre-rempli.</span>
+                </a>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <a class="admin-shortcut-card text-decoration-none" th:href="@{/admin/chambres/nouvelle}">
+                    <span class="admin-shortcut-badge text-bg-dark">Chambre</span>
+                    <strong class="d-block mt-3 text-dark">Ajouter une chambre</strong>
+                    <span class="small text-muted">Creer une nouvelle chambre et son tarif.</span>
+                </a>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <a class="admin-shortcut-card text-decoration-none" th:href="@{/admin/stocks/nouveau}">
+                    <span class="admin-shortcut-badge text-bg-warning text-dark">Stock</span>
+                    <strong class="d-block mt-3 text-dark">Ajouter un produit PPN</strong>
+                    <span class="small text-muted">Approvisionner et suivre les alertes critiques.</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="row g-3 mb-4">
+        <div class="col-6 col-lg-2">
+            <div class="surface-glass rounded-4 p-3 h-100 text-center">
+                <div class="stat-number" th:text="${stats.totalReservations}">0</div>
+                <div class="small text-muted">Reservations</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-2">
+            <div class="surface-glass rounded-4 p-3 h-100 text-center">
+                <div class="stat-number text-warning" th:text="${stats.reservationsEnAttente}">0</div>
+                <div class="small text-muted">En attente</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-2">
+            <div class="surface-glass rounded-4 p-3 h-100 text-center">
+                <div class="stat-number text-success" th:text="${stats.reservationsConfirmees}">0</div>
+                <div class="small text-muted">Confirmees</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-2">
+            <div class="surface-glass rounded-4 p-3 h-100 text-center">
+                <div class="stat-number text-danger" th:text="${stats.reservationsAnnulees}">0</div>
+                <div class="small text-muted">Annulees</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-2">
+            <div class="surface-glass rounded-4 p-3 h-100 text-center">
+                <div class="stat-number" th:text="${stats.stocksCritiques}">0</div>
+                <div class="small text-muted">Stocks critiques</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-2">
+            <div class="surface-glass rounded-4 p-3 h-100 text-center">
+                <div class="stat-number" th:text="${stats.montantEncaisse}">0</div>
+                <div class="small text-muted">Encaisse (Ar)</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 surface-glass h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h5 fw-bold mb-0">Arrivees du jour</h2>
+                        <span class="badge text-bg-primary" th:text="${#lists.size(arriveesDuJour)}">0</span>
+                    </div>
+                    <div th:if="${#lists.isEmpty(arriveesDuJour)}" class="text-muted">Aucune arrivee confirmee a suivre aujourd'hui.</div>
+                    <div class="border rounded-3 p-3 mb-2" th:each="reservation : ${arriveesDuJour}">
+                        <div class="fw-semibold" th:text="${reservation.client.nomComplet}"></div>
+                        <div class="small text-muted" th:text="${'Chambre ' + reservation.chambre.numero + ' - ' + reservation.chambre.type}"></div>
+                        <div class="small text-muted" th:text="${reservation.client.telephone}"></div>
+                        <form th:action="@{/admin/reservations/{id}/check-in(id=${reservation.id})}" method="post" class="mt-2">
+                            <button class="btn btn-outline-success btn-sm w-100">Faire le check-in</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 surface-glass h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h5 fw-bold mb-0">Departs du jour</h2>
+                        <span class="badge text-bg-warning" th:text="${#lists.size(departsDuJour)}">0</span>
+                    </div>
+                    <div th:if="${#lists.isEmpty(departsDuJour)}" class="text-muted">Aucun depart a traiter aujourd'hui.</div>
+                    <div class="border rounded-3 p-3 mb-2" th:each="reservation : ${departsDuJour}">
+                        <div class="fw-semibold" th:text="${reservation.client.nomComplet}"></div>
+                        <div class="small text-muted" th:text="${'Chambre ' + reservation.chambre.numero + ' - ' + reservation.chambre.type}"></div>
+                        <div class="small text-muted" th:text="${'Statut : ' + reservation.statutSejour}"></div>
+                        <form th:if="${reservation.statutSejour.name() == 'EN_COURS'}"
+                              th:action="@{/admin/reservations/{id}/check-out(id=${reservation.id})}"
+                              method="post"
+                              class="mt-2">
+                            <button class="btn btn-outline-dark btn-sm w-100">Faire le check-out</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="row g-4">
+        <div class="col-12 col-xxl-8">
+            <div class="card border-0 shadow-sm rounded-4 surface-glass mb-4">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                        <h2 class="h4 fw-bold mb-0">Reservations clients</h2>
+                        <form th:action="@{/admin/dashboard}" method="get" class="row g-2 align-items-end w-100">
+                            <div class="col-12 col-md-4">
+                                <label class="form-label">Recherche</label>
+                                <input class="form-control" type="text" name="recherche" th:value="${recherche}" placeholder="Client, email, chambre, ID">
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <label class="form-label">Statut reservation</label>
+                                <select class="form-select" name="statut">
+                                    <option value="">Tous</option>
+                                    <option th:each="statutValue : ${statutsReservation}" th:value="${statutValue.name()}" th:text="${statutValue.name()}" th:selected="${statutSelectionne == statutValue.name()}"></option>
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <label class="form-label">Statut sejour</label>
+                                <select class="form-select" name="statutSejour">
+                                    <option value="">Tous</option>
+                                    <option th:each="statutValue : ${statutsSejour}" th:value="${statutValue.name()}" th:text="${statutValue.name()}" th:selected="${statutSejourSelectionne == statutValue.name()}"></option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-2 d-grid">
+                                <button class="btn btn-primary" type="submit">Filtrer</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Client</th>
+                                <th>Chambre</th>
+                                <th>Sejour</th>
+                                <th>Montant</th>
+                                <th>Statuts</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="reservation : ${reservations}">
+                                <td th:text="${reservation.id}"></td>
+                                <td>
+                                    <div class="fw-semibold" th:text="${reservation.client.nomComplet}"></div>
+                                    <div class="small text-muted" th:text="${reservation.client.email}"></div>
+                                    <div class="small text-muted" th:text="${reservation.client.telephone}"></div>
+                                </td>
+                                <td>
+                                    <div th:text="${reservation.chambre.numero}"></div>
+                                    <div class="small text-muted" th:text="${reservation.chambre.type}"></div>
+                                </td>
+                                <td th:text="${reservation.dateArrivee + ' au ' + reservation.dateDepart}"></td>
+                                <td>
+                                    <div>Total : <span th:text="${reservation.montantTotal}"></span> Ar</div>
+                                    <div class="small text-muted">Acompte : <span th:text="${reservation.acompte}"></span> Ar</div>
+                                </td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${reservation.statut.name() == 'CONFIRMEE'} ? ' text-bg-success' : (${reservation.statut.name() == 'ANNULEE'} ? ' text-bg-danger' : ' text-bg-warning')"
+                                          th:text="${reservation.statut}"></span>
+                                    <div class="small text-muted mt-1" th:text="${'Sejour : ' + reservation.statutSejour}"></div>
+                                </td>
+                                <td>
+                                    <div class="d-grid gap-2">
+                                        <form th:if="${reservation.statut.name() == 'EN_ATTENTE'}"
+                                              th:action="@{/admin/reservations/{id}/valider(id=${reservation.id})}"
+                                              method="post">
+                                            <button class="btn btn-primary btn-sm">Valider</button>
+                                        </form>
+                                        <a class="btn btn-outline-primary btn-sm"
+                                           th:href="@{/admin/reservations/{id}/modifier(id=${reservation.id},recherche=${recherche},statut=${statutSelectionne},statutSejour=${statutSejourSelectionne})}">
+                                            Modifier
+                                        </a>
+                                        <form th:if="${reservation.statut.name() != 'ANNULEE'}"
+                                              th:action="@{/admin/reservations/{id}/annuler(id=${reservation.id})}"
+                                              method="post">
+                                            <button class="btn btn-outline-danger btn-sm">Annuler</button>
+                                        </form>
+                                        <form th:if="${reservation.statut.name() == 'CONFIRMEE' and reservation.statutSejour.name() == 'NON_COMMENCE'}"
+                                              th:action="@{/admin/reservations/{id}/check-in(id=${reservation.id})}"
+                                              method="post">
+                                            <button class="btn btn-outline-success btn-sm">Check-in</button>
+                                        </form>
+                                        <form th:if="${reservation.statutSejour.name() == 'EN_COURS'}"
+                                              th:action="@{/admin/reservations/{id}/check-out(id=${reservation.id})}"
+                                              method="post">
+                                            <button class="btn btn-outline-dark btn-sm">Check-out</button>
+                                        </form>
+                                        <a class="btn btn-outline-secondary btn-sm"
+                                           th:if="${reservation.facture != null}"
+                                           th:href="@{/admin/reservations/{id}/facture/pdf(id=${reservation.id})}">
+                                            Facture PDF
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(reservations)}">
+                                <td colspan="7" class="text-center text-muted py-4">Aucune reservation ne correspond aux filtres.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 surface-glass" th:if="${reservationEditId}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h4 fw-bold mb-0">Modifier la reservation</h2>
+                        <a class="btn btn-outline-secondary btn-sm" th:href="@{/admin/dashboard}">Fermer</a>
+                    </div>
+                    <form th:action="@{/admin/reservations/{id}/modifier(id=${reservationEditId})}" th:object="${reservationUpdateForm}" method="post" class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nom complet</label>
+                            <input class="form-control"
+                                   th:field="*{nomComplet}"
+                                   maxlength="120"
+                                   pattern="[A-Za-zÀ-ÖØ-öø-ÿ' -]{2,120}"
+                                   title="Utilisez uniquement des lettres, espaces, apostrophes ou tirets.">
+                            <div class="text-danger small mt-1" th:errors="*{nomComplet}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Telephone</label>
+                            <input class="form-control"
+                                   th:field="*{telephone}"
+                                   maxlength="13"
+                                   inputmode="tel"
+                                   pattern="(0|\+261)(32|33|34|38)[0-9]{7}"
+                                   title="Format malgache attendu : 032/033/034/038 suivi de 7 chiffres, ou +261.">
+                            <div class="text-danger small mt-1" th:errors="*{telephone}"></div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" th:field="*{email}" maxlength="120" inputmode="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}" oninput="this.value = this.value.toLowerCase()">
+                            <div class="text-danger small mt-1" th:errors="*{email}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Date d'arrivee</label>
+                            <input type="date" class="form-control" th:field="*{dateArrivee}">
+                            <div class="text-danger small mt-1" th:errors="*{dateArrivee}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Date de depart</label>
+                            <input type="date" class="form-control" th:field="*{dateDepart}">
+                            <div class="text-danger small mt-1" th:errors="*{dateDepart}"></div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Chambre</label>
+                            <select class="form-select" th:field="*{chambreId}">
+                                <option th:each="chambre : ${chambres}" th:value="${chambre.id}" th:text="${chambre.numero + ' - ' + chambre.type + ' - ' + chambre.prixParNuit + ' Ar'}"></option>
+                            </select>
+                            <div class="text-danger small mt-1" th:errors="*{chambreId}"></div>
+                        </div>
+                        <div class="col-12 d-grid">
+                            <button class="btn btn-dark" type="submit">Enregistrer les modifications</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xxl-4">
+            <div class="card border-0 shadow-sm rounded-4 surface-glass mb-4">
+                <div class="card-body">
+                    <h2 class="h5 fw-bold mb-3">Alerte stock critique</h2>
+                    <div th:if="${#lists.isEmpty(alertes)}" class="text-muted">Aucune alerte active.</div>
+                    <div class="alert alert-warning" th:each="alerte : ${alertes}">
+                        <div class="fw-semibold" th:text="${alerte.nomProduit}"></div>
+                        <div class="small" th:text="${alerte.messageAlerte}"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 surface-glass mb-4">
+                <div class="card-body">
+                    <h2 class="h5 fw-bold mb-3">Stock PPN</h2>
+                    <div class="border rounded-3 p-3 mb-2" th:each="stock : ${stocks}">
+                        <div class="fw-semibold" th:text="${stock.nomProduit}"></div>
+                        <div class="small text-muted">Quantite : <span th:text="${stock.quantite}"></span> <span th:text="${stock.unite}"></span></div>
+                        <div class="small text-muted">Prix : <span th:text="${stock.prixUnitaire}"></span> Ar</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 surface-glass">
+                <div class="card-body">
+                    <h2 class="h5 fw-bold mb-3">Chambres disponibles</h2>
+                    <div class="border rounded-3 p-3 mb-2" th:each="chambre : ${chambres}">
+                        <div class="fw-semibold">Chambre <span th:text="${chambre.numero}"></span></div>
+                        <div class="small text-muted" th:text="${chambre.type + ' - ' + chambre.capacite + ' personne(s)'}"></div>
+                        <div class="small text-muted">Prix : <span th:text="${chambre.prixParNuit}"></span> Ar</div>
+                        <span class="badge mt-2" th:classappend="${chambre.disponible} ? ' text-bg-success' : ' text-bg-secondary'" th:text="${chambre.disponible} ? 'Disponible' : 'Indisponible'"></span>
+                        <form th:action="@{/admin/chambres/{id}/disponibilite(id=${chambre.id})}" method="post" class="mt-2">
+                            <button class="btn btn-outline-dark btn-sm w-100" type="submit" th:text="${chambre.disponible} ? 'Rendre indisponible' : 'Rendre disponible'"></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

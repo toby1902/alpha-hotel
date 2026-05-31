@@ -1,0 +1,300 @@
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.home-page {
+    background: #f4f1eb;
+    color: #0f172a;
+}
+
+.client-page {
+    background:
+        linear-gradient(rgba(11, 60, 93, 0.78), rgba(8, 32, 50, 0.86)),
+        url("/images/acceuil.jpeg") center center / cover no-repeat fixed;
+    min-height: 100vh;
+}
+
+.hero-section {
+    color: #ffffff;
+}
+
+.admin-page {
+    background:
+        linear-gradient(rgba(244, 247, 251, 0.88), rgba(244, 247, 251, 0.92)),
+        url("/images/acceuil.jpeg") center center / cover no-repeat fixed;
+    min-height: 100vh;
+}
+
+.auth-page {
+    min-height: 100vh;
+    background:
+        linear-gradient(rgba(7, 20, 31, 0.74), rgba(7, 20, 31, 0.82)),
+        url("/images/photo7.avif") center center / cover no-repeat fixed;
+    display: flex;
+    align-items: center;
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+}
+
+.auth-intro {
+    padding: 1rem;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, rgba(11, 60, 93, 0.08), rgba(217, 145, 0, 0.1));
+    border: 1px solid rgba(11, 60, 93, 0.08);
+}
+
+.card {
+    overflow: hidden;
+}
+
+.brand-mark {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 0.35rem;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+}
+
+.brand-lockup {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.surface-glass {
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(6px);
+}
+
+.admin-navbar {
+    background: rgba(15, 23, 42, 0.88) !important;
+    backdrop-filter: blur(6px);
+}
+
+.client-navbar {
+    background: rgba(9, 31, 48, 0.84) !important;
+    backdrop-filter: blur(8px);
+}
+
+.navbar .brand-mark {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+}
+
+.min-vh-75 {
+    min-height: 75vh;
+}
+
+.home-hero {
+    background:
+        linear-gradient(rgba(8, 25, 38, 0.72), rgba(8, 25, 38, 0.76)),
+        url("/images/acceuil.jpeg") center center / cover no-repeat;
+}
+
+.hero-section .container {
+    max-width: 1200px;
+}
+
+.hero-kicker {
+    display: inline-block;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(255, 193, 7, 0.18);
+    color: #ffe08a;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+
+.hero-photo-frame {
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    padding: 1rem;
+    border-radius: 32px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+}
+
+.hero-photo {
+    width: 100%;
+    height: 480px;
+    object-fit: cover;
+    border-radius: 24px;
+}
+
+.section-heading {
+    max-width: 720px;
+    margin-inline: auto;
+}
+
+.section-tag {
+    display: inline-block;
+    padding: 0.35rem 0.8rem;
+    background: #fff1c9;
+    color: #8a5b00;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.room-card {
+    background: #ffffff;
+}
+
+.room-card-image {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+}
+
+.gallery-section {
+    background: linear-gradient(180deg, #fffaf2 0%, #f5ede3 100%);
+}
+
+.gallery-photo {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 24px;
+    box-shadow: 0 18px 34px rgba(15, 23, 42, 0.12);
+}
+
+.tall-photo {
+    height: 100%;
+    min-height: 540px;
+}
+
+.about-list li {
+    position: relative;
+    padding-left: 1.4rem;
+    margin-bottom: 0.75rem;
+}
+
+.about-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55rem;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: #d99100;
+}
+
+.about-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100%;
+}
+
+.about-map {
+    max-width: 100%;
+    max-height: 340px;
+    object-fit: contain;
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.12));
+}
+
+.cta-section {
+    background: #f4f1eb;
+}
+
+.stat-number {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: #0b3c5d;
+}
+
+.site-footer {
+    background: #0f172a;
+}
+
+.admin-action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.admin-shortcut-card {
+    display: block;
+    height: 100%;
+    padding: 1.25rem;
+    border-radius: 1.25rem;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 16px 35px rgba(15, 23, 42, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-shortcut-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 22px 40px rgba(15, 23, 42, 0.12);
+}
+
+.admin-shortcut-badge {
+    display: inline-block;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+@media (max-width: 991.98px) {
+    .hero-photo {
+        height: 340px;
+    }
+
+    .tall-photo {
+        min-height: 280px;
+    }
+
+    .navbar-nav {
+        padding-top: 1rem;
+    }
+
+    .navbar-nav .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .brand-mark {
+        width: 52px;
+        height: 52px;
+    }
+
+    .display-4,
+    .display-5 {
+        font-size: 2rem;
+    }
+
+    .hero-photo {
+        height: 260px;
+    }
+
+    .gallery-photo,
+    .room-card-image {
+        height: 220px;
+    }
+
+    .surface-glass {
+        backdrop-filter: blur(4px);
+    }
+
+    .table-responsive {
+        font-size: 0.92rem;
+    }
+
+    .auth-page {
+        background-attachment: scroll;
+    }
+}
